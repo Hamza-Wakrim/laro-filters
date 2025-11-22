@@ -1,0 +1,44 @@
+<?php
+
+namespace LaroFilters\QueryFilter\Detection\DetectionFactory;
+
+use LaroFilters\QueryFilter\Detection\Contract\DetectorFactoryContract;
+use LaroFilters\QueryFilter\Detection\Detector\DetectorConditionCondition;
+
+/**
+ * Class DetectionEloquentFactory.
+ */
+class DetectionEloquentFactory implements DetectorFactoryContract
+{
+    /**
+     * DetectionFactory constructor.
+     *
+     * @param array $detections
+     */
+    public function __construct(public array $detections)
+    {
+    }
+
+    /**
+     * @param $field
+     * @param $params
+     * @param null $model
+     *
+     * @return string|null
+     */
+    public function buildDetections($field, $params, $model = null): ?string
+    {
+
+        /** @var DetectorConditionCondition $detect */
+        $detect = app(DetectorConditionCondition::class, ['detector' => $this->detections]);
+
+        $class_name = null;
+        if (!empty($model)) {
+            $class_name = class_basename($model);
+        }
+
+        $method = $detect->detect($field, $params, $model->getWhiteListFilter(), $model->checkModelHasOverrideMethod($field), $class_name);
+
+        return $method;
+    }
+}

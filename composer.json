@@ -1,0 +1,62 @@
+{
+  "name": "hamza-wakrim/laro-filters",
+  "description": "Laro Filters adds custom filters automatically to your Eloquent Models in Laravel.\nIt's easy to use and fully dynamic, just with sending the Query Strings to it.",
+  "keywords": [
+    "laravel",
+    "Laravel",
+    "laravel tools",
+    "eloquent",
+    "laravel query filter",
+    "laravel filter",
+    "dynamic-filters",
+    "search",
+    "query",
+    "filter",
+    "laravel filter multiple parameters"
+  ],
+  "homepage": "https://github.com/hamza-wakrim/laro-filters",
+  "license": "MIT",
+  "type": "lib",
+  "authors": [
+    {
+      "name": "Hamza Wakrim",
+      "email": "wakrimhamza90@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.0|^8.1|^8.2|^8.3|^8.4",
+    "illuminate/support": "~8.0|~9.0|~10.0|~11.0|~12.0",
+    "illuminate/container": "~8.0|~9.0|~10.0|~11.0|~12.0",
+    "illuminate/database": "~8.0|~9.0|~10.0|~11.0|~12.0",
+    "illuminate/pagination": "~8.0|~9.0|~10.0|~11.0|~12.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "8.3|8.5|9.3|^9.5|10.5.5|^11.5.3",
+    "orchestra/testbench": "5.*|^6.0|^6.6.0|^7.0.0|^8.0.0|v9.0.0|v10.0.0",
+    "mockery/mockery": "1.4.x-dev|1.4.2|1.5.1|^1.6",
+    "phpstan/phpstan": "^1.8"
+  },
+  "autoload": {
+    "psr-4": {
+      "LaroFilters\\": "src"
+    }
+  },
+  "autoload-dev": { 
+    "psr-4": {},
+    "classmap": []
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --coverage-text"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "LaroFilters\\ServiceProvider"
+      ],
+      "aliases": {
+        "LaroFilters": "LaroFilters\\Facade\\LaroFilters"
+      }
+    }
+  }
+}

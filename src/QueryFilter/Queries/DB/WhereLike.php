@@ -1,0 +1,22 @@
+<?php
+
+namespace LaroFilters\QueryFilter\Queries\DB;
+
+use LaroFilters\QueryFilter\Queries\BaseClause;
+use Illuminate\Database\Query\Builder;
+
+/**
+ * Class WhereLike.
+ */
+class WhereLike extends BaseClause
+{
+    /**
+     * @param $query
+     *
+     * @return Builder
+     */
+    public function apply($query)
+    {
+        return $query->where("$this->filter", 'like', $this->values['like']);
+    }
+}
