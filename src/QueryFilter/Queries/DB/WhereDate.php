@@ -1,8 +1,8 @@
 <?php
 
-namespace laroFilters\QueryFilter\Queries\DB;
+namespace LaroFilters\QueryFilter\Queries\DB;
 
-use laroFilters\QueryFilter\Queries\BaseClause;
+use LaroFilters\QueryFilter\Queries\BaseClause;
 use Illuminate\Database\Query\Builder;
 
 class WhereDate extends BaseClause
