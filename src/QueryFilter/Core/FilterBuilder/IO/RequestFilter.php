@@ -3,7 +3,9 @@
 namespace LaroFilters\QueryFilter\Core\FilterBuilder\IO;
 
 use LaroFilters\QueryFilter\Core\HelperFilter;
+use LaroFilters\QueryFilter\Exceptions\LaroFiltersException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 
 /**
  *
@@ -114,7 +116,7 @@ class RequestFilter
      * @param $builder_model
      * @return array|null
      */
-    public function setFilterRequests(array $ignore_request = null, array $accept_request = null, $builder_model): ?array
+    public function setFilterRequests(?array $ignore_request = null, ?array $accept_request = null, $builder_model): ?array
     {
         if (!empty($this->getRequest())) {
             if (!empty(config('laroFilters.ignore_request'))) {
@@ -129,15 +131,51 @@ class RequestFilter
             }
 
             foreach ($this->getRequest() as $name => $value) {
+                try {
+                    $value = $this->getCastedMethodValue($name, $builder_model, $value);
 
-                $value = $this->getCastedMethodValue($name, $builder_model, $value);
-
-                if (is_array($value) && !empty($builder_model) && method_exists($builder_model, $name)) {
-                    if (HelperFilter::isAssoc($value)) {
-                        unset($this->request[$name]);
-                        $out = HelperFilter::convertRelationArrayRequestToStr($name, $value);
-                        $this->setRequest(array_merge($out, $this->request));
+                    if (is_array($value) && !empty($builder_model) && method_exists($builder_model, $name)) {
+                        if (HelperFilter::isAssoc($value)) {
+                            try {
+                                unset($this->request[$name]);
+                                $out = HelperFilter::convertRelationArrayRequestToStr($name, $value);
+                                
+                                if ($out === null) {
+                                    Log::warning('LaroFilters: convertRelationArrayRequestToStr returned null', [
+                                        'name' => $name,
+                                        'value' => $value,
+                                    ]);
+                                    continue;
+                                }
+                                
+                                $this->setRequest(array_merge($out, $this->request));
+                            } catch (LaroFiltersException $e) {
+                                Log::error('LaroFilters: Error converting relation array request', [
+                                    'name' => $name,
+                                    'value' => $value,
+                                    'error' => $e->getMessage(),
+                                ]);
+                                throw $e;
+                            } catch (\Exception $e) {
+                                Log::error('LaroFilters: Unexpected error converting relation array request', [
+                                    'name' => $name,
+                                    'value' => $value,
+                                    'error' => $e->getMessage(),
+                                ]);
+                                throw new LaroFiltersException("Error processing relation filter '{$name}': " . $e->getMessage(), 4);
+                            }
+                        }
                     }
+                } catch (LaroFiltersException $e) {
+                    throw $e;
+                } catch (\Exception $e) {
+                    Log::error('LaroFilters: Error processing request filter', [
+                        'name' => $name,
+                        'value' => $value ?? null,
+                        'error' => $e->getMessage(),
+                    ]);
+                    // Continue processing other filters instead of failing completely
+                    continue;
                 }
             }
         }
